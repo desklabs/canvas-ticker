@@ -1,0 +1,12 @@
+{
+  "name": "Canvas Ticker",
+  "description": "A Desk.com canvas app that allows to keep track on how much time your agents spend on a case.",
+  "keywords": ["productivity", "service", "canvas", "ticker", "cases", "timer"],
+  "website": "https://github.com/desklabs/canvas-ticker",
+  "repository": "https://github.com/desklabs/canvas-ticker.git",
+  "logo": "http://webassets.desk.com/resources/images/icons/favicon-apple-114x114.png?v=3.5",
+  "success_url": "https://login.desk.com",
+  "env": {
+    "NODE_ENV": "production"
+  }
+}

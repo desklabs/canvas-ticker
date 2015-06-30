@@ -1,0 +1,13 @@
+{
+  "name": "canvas-ticker",
+  "version": "0.0.0",
+  "description": "A Desk.com canvas app that allows to keep track on how much time your agents spend on a case..",
+  "author": "DeskLabs",
+  "license": "BSD 3",
+  "homepage": "https://github.com/desklabs/canvas-ticker",
+  "bugs": "https://github.com/desklabs/canvas-ticker/issues",
+  "private": true,
+  "dependencies": {
+    "connect": "2.3.x"
+  }
+}
