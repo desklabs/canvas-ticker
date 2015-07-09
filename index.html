@@ -86,6 +86,7 @@
         filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#009ddc', endColorstr='#009ddc', GradientType=0);
         border-color: #009ddc #009ddc #d9d9d9;
         border-color: rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25);
+        *background-color: #009ddc;
         filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
         padding: 7px 10px;
         border: 1px solid #d6dadd;
@@ -97,7 +98,8 @@
 
       .btn:hover,.btn:focus,.btn:active,.btn.active,.btn.disabled,.btn[disabled] {
         color: #fff;
-        background-color: #009ddc;
+        background-color: #18c489;
+        *background-color: #15ad79
       }
 
       .btn:active,.btn.active {
@@ -255,12 +257,15 @@
           },
           start: function() {
             $(this).data('running', true)
+            return $(this)
           },
           stop: function() {
             $(this).data('running', false)
+            return $(this)
           },
           set: function(value) {
             $(this).val(toTime(parseInt(value, 10)))
+            return $(this)
           },
           get: function() {
             return toSeconds($(this).val())
@@ -345,8 +350,8 @@
           })
 
           // make sure button is set up correctly
-          if (!$ticker.ticker('isRunning')) {
-            $btn.addClass('btn-primary').text('Start')
+          if ($ticker.ticker('isRunning')) {
+            $btn.removeClass('btn-primary').text('Stop')
           }
 
           // get the ticket information
@@ -357,6 +362,28 @@
 
               ticket = ctx.context.environment.case.url
               client = ctx.client
+
+              Desk.canvas.client.ajax(ticket, {
+                client: ctx.client,
+                method: 'GET',
+                success: function(data) {
+                  if (data.status !== 200) {
+                    return $.error('Unknown error occurred.')
+                  }
+
+                  var locked = data.payload._links.locked_by
+                    , user   = ctx.context.links.userUrl
+
+                  if (!locked || locked.href !== user) {
+                    $btn.remove()
+                    $ticker.ticker('stop')
+                           .ticker('set', offset)
+                           .css('margin', 0)
+                  } else {
+                    store.remove(ticket)
+                  }
+                }
+              })
             }
           })
 
@@ -387,8 +414,8 @@
   </head>
   <body>
     <section class="container">
-      <input type="text" placeholder="00:00:00" id="ticker">
-      <button class="btn" id="btn">Stop</button>
+      <input type="text" placeholder="00:00:00" id="ticker" disabled="disabled">
+      <button class="btn btn-primary" id="btn">Start</button>
     </section>
   </body>
 </html>
