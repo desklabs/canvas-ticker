@@ -2,7 +2,8 @@
 
 var resolve = require('path').resolve
   , connect = require('connect')
-  , https = require('https')
+  , http = require('http')
+  , options = {}
   , redis = require('redis')
   , SocketServer = require('ws').Server
   , Ticker = require('./ticker')
@@ -19,13 +20,15 @@ server.use(connect.logger('dev'))
       .use(connect.static(path, { redirect: false }))
 
 if (process.env['NODE_ENV'] && process.env['NODE_ENV'] == 'development') {
-  var options = {
+  options = {
     key: fs.readFileSync(resolve('certs/server.key')),
     cert: fs.readFileSync(resolve('certs/server.crt')),
     ca: fs.readFileSync(resolve('certs/server.csr'))
   }
-  server = https.createServer(options, server);
+  http = require('https');
 }
+
+server = http.createServer(options, server);
 
 server.listen(port, function() {
   console.log('\033[90mserving \033[36m%s\033[90m on port \033[96m%d\033[0m', path, port);
