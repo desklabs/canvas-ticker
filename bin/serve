@@ -3,17 +3,20 @@
 var resolve = require('path').resolve
   , connect = require('connect')
   , https = require('https')
+  , redis = require('redis')
+  , SocketServer = require('ws').Server
+  , Ticker = require('./ticker')
   , fs = require('fs');
 
 var server = connect()
-  , path = resolve('.')
+  , path = resolve('./public')
+  , client = redis.createClient(process.env['REDIS_URL'])
   , port = process.env['PORT'] || 3000;
 
 server.use(connect.logger('dev'))
       .use(function(req, res, next) { req.method = 'GET'; next(); })
       .use(connect.compress())
-      .use(connect.static(resolve('.'), { redirect: false }))
-
+      .use(connect.static(path, { redirect: false }))
 
 if (process.env['NODE_ENV'] && process.env['NODE_ENV'] == 'development') {
   var options = {
@@ -21,10 +24,41 @@ if (process.env['NODE_ENV'] && process.env['NODE_ENV'] == 'development') {
     cert: fs.readFileSync(resolve('certs/server.crt')),
     ca: fs.readFileSync(resolve('certs/server.csr'))
   }
-
-  server = https.createServer(options, server)
+  server = https.createServer(options, server);
 }
 
 server.listen(port, function() {
   console.log('\033[90mserving \033[36m%s\033[90m on port \033[96m%d\033[0m', path, port);
+});
+
+var socket = new SocketServer({ server: server });
+socket.on('connection', function(conn) {
+  console.log('\033[90mwebsocket connection opened for business\033[0m');
+
+  conn.connect = function(id) {
+    this.ticker = new Ticker(client, id);
+    this.ticker.on('change', function(time) {
+      conn.send(String(this.ticker.getTime()));
+    }.bind(this));
+    this.ticker.start();
+  }
+
+  conn.setType = function(type) {
+    this.ticker.currentType = type;
+  }
+
+  conn.toggle = function() {
+    this.ticker.paused = !this.ticker.paused;
+  }
+
+  conn.on('message', function(message) {
+    message = JSON.parse(message);
+    if (typeof(conn[message.action]) == 'function') {
+      conn[message.action].apply(conn, message.args);
+    }
+  });
+
+  conn.on('close', function() {
+    if (conn.ticker) conn.ticker.save();
+  });
 });

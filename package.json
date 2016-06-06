@@ -8,6 +8,8 @@
   "bugs": "https://github.com/desklabs/canvas-ticker/issues",
   "private": true,
   "dependencies": {
-    "connect": "2.3.x"
+    "connect": "2.3.x",
+    "redis": "^2.6.1",
+    "ws": "^1.1.0"
   }
 }

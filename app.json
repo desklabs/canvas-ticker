@@ -8,5 +8,6 @@
   "success_url": "https://login.desk.com",
   "env": {
     "NODE_ENV": "production"
-  }
+  },
+  "addons": ["heroku-redis:hobby-dev"]
 }
