@@ -2,7 +2,11 @@
 The **Agent Time Tracker** is a Desk.com Canvas application that adds a time tracker to cases. It allows you to start and stop the timer with background updates every minute.
 
 ## I. Deploy the Application
-First, install this application by deploying the source code to your Heroku account. To deploy your application, simply click this button:
+First, install this application by deploying the source code to your Heroku account. 
+
+You will also need to verify your account by adding a valid credit card if you haven't done so already https://devcenter.heroku.com/articles/account-verification
+
+To deploy your application, simply click this button:
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https%3A%2F%2Fgithub.com%2Fdesklabs%2Fcanvas-ticker)
 
